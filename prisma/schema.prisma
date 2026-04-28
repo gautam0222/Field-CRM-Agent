@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Rep {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  email     String?
+  zone      String
+  managerId String?
+  createdAt DateTime @default(now())
+
+  visits Visit[]
+}
+
+model Outlet {
+  id         String   @id @default(cuid())
+  name       String
+  doctorName String?
+  address    String?
+  zone       String
+  lat        Float?
+  lng        Float?
+  createdAt  DateTime @default(now())
+
+  visits Visit[]
+}
+
+model Visit {
+  id                String    @id @default(cuid())
+  repId             String
+  outletId          String?
+  doctorName        String?
+  productsDiscussed String[]
+  samplesGiven      String[]
+  followUpDate      DateTime?
+  notes             String?
+  sentiment         String?
+  transcript        String?
+  smsSent           Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+
+  rep    Rep     @relation(fields: [repId], references: [id])
+  outlet Outlet? @relation(fields: [outletId], references: [id])
+}
+
+model MockSMS {
+  id        String   @id @default(cuid())
+  to        String
+  body      String
+  createdAt DateTime @default(now())
+}
