@@ -1,8 +1,9 @@
-import { prisma }    from "@/lib/prisma"
-import { notFound }  from "next/navigation"
-import Link          from "next/link"
-import { formatDate, formatDateTime, sentimentColor, sentimentLabel, cn } from "@/lib/utils"
-import { ArrowLeft, Phone, MapPin, Calendar } from "lucide-react"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { ArrowLeft, Calendar, MapPin, Phone } from "lucide-react"
+
+import { prisma } from "@/lib/prisma"
+import { cn, formatDate, formatDateTime, sentimentColor, sentimentLabel } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
@@ -14,7 +15,7 @@ export default async function RepDetailPage({
   const { id } = await params
 
   const rep = await prisma.rep.findUnique({
-    where:   { id },
+    where: { id },
     include: {
       visits: {
         orderBy: { createdAt: "desc" },
@@ -26,34 +27,33 @@ export default async function RepDetailPage({
 
   if (!rep) notFound()
 
-  const positiveVisits = rep.visits.filter((v) => v.sentiment === "positive").length
-  const sentimentRate  = rep._count.visits > 0
-    ? Math.round((positiveVisits / rep._count.visits) * 100)
-    : 0
+  const positiveVisits = rep.visits.filter((visit) => visit.sentiment === "positive").length
+  const sentimentRate =
+    rep._count.visits > 0
+      ? Math.round((positiveVisits / rep._count.visits) * 100)
+      : 0
 
   return (
     <div className="max-w-3xl space-y-5">
-
       <Link
         href="/reps"
-        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-800"
       >
         <ArrowLeft size={15} />
         Back to Reps
       </Link>
 
-      {/* Profile card */}
-      <div className="bg-white rounded-xl border border-zinc-200 p-6">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-emerald-100">
               <span className="text-lg font-bold text-emerald-700">
                 {rep.name.charAt(0).toUpperCase()}
               </span>
             </div>
             <div>
               <h2 className="text-lg font-semibold text-zinc-900">{rep.name}</h2>
-              <div className="flex items-center gap-4 mt-1">
+              <div className="mt-1 flex flex-wrap items-center gap-4">
                 <span className="flex items-center gap-1.5 text-xs text-zinc-500">
                   <Phone size={12} /> {rep.phone}
                 </span>
@@ -67,36 +67,33 @@ export default async function RepDetailPage({
             </div>
           </div>
 
-          {/* Trigger call button */}
           <a
             href={`tel:${rep.phone}`}
-            className="inline-flex items-center rounded-lg border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+            className="inline-flex items-center rounded-lg border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
           >
             <Phone size={14} className="mr-1.5" />
             Call
           </a>
         </div>
 
-        {/* Mini stats */}
-        <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-zinc-100">
+        <div className="mt-6 grid grid-cols-3 gap-4 border-t border-zinc-100 pt-5">
           <div>
-            <p className="text-xs text-zinc-400 mb-0.5">Total Visits</p>
+            <p className="mb-0.5 text-xs text-zinc-400">Total Visits</p>
             <p className="text-2xl font-bold text-zinc-900">{rep._count.visits}</p>
           </div>
           <div>
-            <p className="text-xs text-zinc-400 mb-0.5">Positive Rate</p>
+            <p className="mb-0.5 text-xs text-zinc-400">Positive Rate</p>
             <p className="text-2xl font-bold text-emerald-600">{sentimentRate}%</p>
           </div>
           <div>
-            <p className="text-xs text-zinc-400 mb-0.5">Email</p>
-            <p className="text-sm text-zinc-600 truncate">{rep.email ?? "—"}</p>
+            <p className="mb-0.5 text-xs text-zinc-400">Email</p>
+            <p className="truncate text-sm text-zinc-600">{rep.email ?? "-"}</p>
           </div>
         </div>
       </div>
 
-      {/* Visit history */}
-      <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
-        <div className="px-5 py-4 border-b border-zinc-100">
+      <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+        <div className="border-b border-zinc-100 px-5 py-4">
           <h3 className="text-sm font-semibold text-zinc-800">Visit History</h3>
         </div>
         <div className="divide-y divide-zinc-50">
@@ -105,25 +102,28 @@ export default async function RepDetailPage({
               No visits logged yet
             </div>
           )}
-          {rep.visits.map((v) => (
+
+          {rep.visits.map((visit) => (
             <Link
-              key={v.id}
-              href={`/visits/${v.id}`}
-              className="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50 transition-colors"
+              key={visit.id}
+              href={`/visits/${visit.id}`}
+              className="flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-zinc-50"
             >
               <div>
                 <p className="text-sm font-medium text-zinc-800">
-                  {v.doctorName ? `Dr. ${v.doctorName}` : "Unknown Doctor"}
+                  {visit.doctorName ? `Dr. ${visit.doctorName}` : "Unknown Doctor"}
                 </p>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {formatDateTime(v.createdAt)}
+                <p className="mt-0.5 text-xs text-zinc-400">
+                  {formatDateTime(visit.createdAt)}
                 </p>
               </div>
-              <span className={cn(
-                "text-xs px-2 py-0.5 rounded-full border font-medium",
-                sentimentColor(v.sentiment)
-              )}>
-                {sentimentLabel(v.sentiment)}
+              <span
+                className={cn(
+                  "rounded-full border px-2 py-0.5 text-xs font-medium",
+                  sentimentColor(visit.sentiment)
+                )}
+              >
+                {sentimentLabel(visit.sentiment)}
               </span>
             </Link>
           ))}

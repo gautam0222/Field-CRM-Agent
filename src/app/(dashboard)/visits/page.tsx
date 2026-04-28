@@ -1,6 +1,7 @@
-import { prisma }     from "@/lib/prisma"
-import Link           from "next/link"
-import { formatDateTime, sentimentColor, sentimentLabel, cn } from "@/lib/utils"
+import Link from "next/link"
+
+import { prisma } from "@/lib/prisma"
+import { cn, formatDateTime, sentimentColor, sentimentLabel } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
@@ -15,70 +16,79 @@ export default async function VisitsPage() {
 
   return (
     <div className="max-w-5xl space-y-5">
-
       <div>
         <h2 className="text-lg font-semibold text-zinc-900">All Visits</h2>
         <p className="text-sm text-zinc-500">{visits.length} visits logged</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-100 bg-zinc-50">
-                <th className="text-left px-5 py-3 text-xs font-medium text-zinc-500">Doctor</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500">Rep</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500">Zone</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500">Products</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500">Sentiment</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500">Date</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-zinc-500">Doctor</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500">Rep</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500">Zone</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500">Products</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500">Sentiment</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500">Date</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {visits.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-zinc-400 text-sm">
+                  <td colSpan={7} className="py-12 text-center text-sm text-zinc-400">
                     No visits yet. Visits appear here after reps log calls.
                   </td>
                 </tr>
               )}
-              {visits.map((v, i) => (
+
+              {visits.map((visit, index) => (
                 <tr
-                  key={v.id}
+                  key={visit.id}
                   className={cn(
-                    "border-b border-zinc-50 hover:bg-zinc-50 transition-colors",
-                    i === visits.length - 1 && "border-0"
+                    "border-b border-zinc-50 transition-colors hover:bg-zinc-50",
+                    index === visits.length - 1 && "border-0"
                   )}
                 >
                   <td className="px-5 py-3 font-medium text-zinc-800">
-                    {v.doctorName ? `Dr. ${v.doctorName}` : "—"}
+                    {visit.doctorName ? `Dr. ${visit.doctorName}` : "-"}
                   </td>
-                  <td className="px-4 py-3 text-zinc-600">{v.rep?.name ?? "—"}</td>
-                  <td className="px-4 py-3 text-zinc-500">{v.rep?.zone ?? "—"}</td>
+                  <td className="px-4 py-3 text-zinc-600">
+                    {visit.rep?.name ?? "-"}
+                  </td>
                   <td className="px-4 py-3 text-zinc-500">
-                    {v.productsDiscussed.length > 0
-                      ? v.productsDiscussed.slice(0, 2).join(", ") +
-                        (v.productsDiscussed.length > 2 ? ` +${v.productsDiscussed.length - 2}` : "")
-                      : "—"}
+                    {visit.rep?.zone ?? "-"}
+                  </td>
+                  <td className="px-4 py-3 text-zinc-500">
+                    {visit.productsDiscussed.length > 0
+                      ? `${visit.productsDiscussed.slice(0, 2).join(", ")}${
+                          visit.productsDiscussed.length > 2
+                            ? ` +${visit.productsDiscussed.length - 2}`
+                            : ""
+                        }`
+                      : "-"}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={cn(
-                      "text-xs px-2 py-0.5 rounded-full border font-medium",
-                      sentimentColor(v.sentiment)
-                    )}>
-                      {sentimentLabel(v.sentiment)}
+                    <span
+                      className={cn(
+                        "rounded-full border px-2 py-0.5 text-xs font-medium",
+                        sentimentColor(visit.sentiment)
+                      )}
+                    >
+                      {sentimentLabel(visit.sentiment)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-zinc-500 text-xs">
-                    {formatDateTime(v.createdAt)}
+                  <td className="px-4 py-3 text-xs text-zinc-500">
+                    {formatDateTime(visit.createdAt)}
                   </td>
                   <td className="px-4 py-3">
                     <Link
-                      href={`/visits/${v.id}`}
-                      className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                      href={`/visits/${visit.id}`}
+                      className="text-xs font-medium text-emerald-600 hover:text-emerald-700"
                     >
-                      View →
+                      View
                     </Link>
                   </td>
                 </tr>

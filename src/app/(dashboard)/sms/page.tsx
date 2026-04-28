@@ -1,6 +1,7 @@
-import { prisma }      from "@/lib/prisma"
+import { MessageSquare } from "lucide-react"
+
 import { formatDateTime } from "@/lib/utils"
-import { MessageSquare }  from "lucide-react"
+import { prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
@@ -12,7 +13,6 @@ export default async function SMSLogPage() {
 
   return (
     <div className="max-w-2xl space-y-5">
-
       <div>
         <h2 className="text-lg font-semibold text-zinc-900">Mock SMS Log</h2>
         <p className="text-sm text-zinc-500">
@@ -20,33 +20,29 @@ export default async function SMSLogPage() {
         </p>
       </div>
 
-      {/* Demo notice */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700 flex items-start gap-2">
+      <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
         <MessageSquare size={14} className="mt-0.5 shrink-0" />
         <span>
-          In production these would be real SMS messages via Twilio.
-          For this demo they are logged here instead — zero cost.
+          In production these would be real SMS messages via Twilio. For this
+          demo they are logged here instead - zero cost.
         </span>
       </div>
 
       <div className="space-y-3">
         {messages.length === 0 && (
-          <div className="bg-white rounded-xl border border-zinc-200 py-12 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-zinc-200 bg-white py-12 text-center text-sm text-zinc-400">
             No messages yet. They appear here after reps log visits.
           </div>
         )}
 
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className="bg-white rounded-xl border border-zinc-200 p-4"
-          >
-            <div className="flex items-center justify-between mb-2">
+          <div key={msg.id} className="rounded-xl border border-zinc-200 bg-white p-4">
+            <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                <div className="flex size-6 items-center justify-center rounded-full bg-emerald-100">
                   <MessageSquare size={12} className="text-emerald-600" />
                 </div>
-                <span className="text-xs font-medium text-zinc-700 font-mono">
+                <span className="font-mono text-xs font-medium text-zinc-700">
                   {msg.to}
                 </span>
               </div>
@@ -55,13 +51,13 @@ export default async function SMSLogPage() {
               </span>
             </div>
 
-            <p className="text-sm text-zinc-600 whitespace-pre-wrap leading-relaxed pl-8">
+            <p className="whitespace-pre-wrap pl-8 text-sm leading-relaxed text-zinc-600">
               {msg.body}
             </p>
 
-            <div className="pl-8 mt-2">
-              <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
-                ✓ Delivered (mock)
+            <div className="mt-2 pl-8">
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                Delivered (mock)
               </span>
             </div>
           </div>
